@@ -8,6 +8,11 @@ FrostyCrits, Dec 2017<br>
 1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq<br>
 **If you use this app please consider donating to my BitCoin address**<br>
 
+## **Screenshots**:
+![Screenshot #1](/gfx/screenshot.gif)<br>
+![Screenshot #2](/gfx/screenshot2.gif)<br>
+![Screenshot #3](/gfx/screenshot3.gif)<br>
+
 I wrote this because... after a while watching the numbers on **Binance** 
 became painfull. This handy tool can run minimized and alert you when a 
 price point has been reached.
@@ -20,6 +25,7 @@ in seconds.
 - You can leave this app running in the background and always keep an eye
 on your investments without having to look at them all day.
 - Updates data every 30 seconds and redisplays the grid.
+
 
 ## **Planned Features**:
 - Email/SMS Notifications
