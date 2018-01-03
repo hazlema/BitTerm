@@ -4,27 +4,27 @@
  *
  * If you use this, please donate to my BTC address
  */
-global.fetch   = require('node-fetch')
+global.fetch   = require('node-fetch');
 
-var cc         = require('cryptocompare')
+var cc         = require('cryptocompare');
 var fs         = require('fs');
-var ansi       = require('ansi')
-var cursor     = ansi(process.stdout)
+var ansi       = require('ansi');
+var cursor     = ansi(process.stdout);
 var events     = require('events');
 
 var BTCUpdate  = new events.EventEmitter();
-var inputArray = new Array();
+var inputArray = [];
 var inputTask  = "";
 var Refresh;
 
 var symbols    = {};
 var suspend    = false;
 var prompt     = "^n^G[" +
-                "^CQ^wuit^G : " +
-                "^CC^wurrency^G : " +
-                "^CS^wearch^G : " +
-                "^CD^wetails" +
-                 "^G]^n^G[: "+
+                 "^CQ^wuit^G : " +
+                 "^CC^wurrency^G : " +
+                 "^CS^wearch^G : " +
+                 "^CD^wetails" +
+                 "^G]^n^G[: " +
                  "^CU^wpdate^G : " +
                  "^CA^wdd^G : " +
                  "^CR^wemove^G : " +
@@ -32,20 +32,58 @@ var prompt     = "^n^G[" +
                  "^G:]: ^W";
 
 var currencies = {
-    BBD: 'Barbadian or Bajan Dollar',       BSD: 'Bahamian Dollar',             CAD: 'Canadian Dollar',             JMD: 'Jamaican Dollar',
-    MXN: 'Mexican Peso',                    USD: 'US Dollar',                   XCD: 'East Caribbean Dollar',       BZD: 'Belizean Dollar',
-    TTD: 'Trinidadian Dollar',              BGN: 'Bulgarian Lev',               CHF: 'Swiss Franc',                 CZK: 'Czech Koruna',
-    DKK: 'Danish Krone',                    EUR: 'Euro',                        GBP: 'British Pound',               HRK: 'Croatian Kuna',
-    HUF: 'Hungarian Forint',                ILS: 'Israeli Shekel',              NOK: 'Norwegian Krone',             PLN: 'Polish Zloty',
-    RON: 'Romanian Leu',                    RSD: 'Serbian Dinar',               SEK: 'Swedish Krona',               TRY: 'Turkish Lira',
-    BWP: 'Botswana Pula',                   GHS: 'Ghanaian Cedi',               KES: 'Kenyan Shilling',             LSL: 'Basotho Loti',
-    MUR: 'Mauritian Rupee',                 MWK: 'Malawian Kwacha',             SZL: 'Swazi Lilangeni',             TND: 'Tunisian Dinar',
-    ZAR: 'South African Rand',              ZMW: 'Zambian Kwacha',              AED: 'Emirati Dirham',              BHD: 'Bahraini Dinar',
-    HKD: 'Hong Kong Dollar',                JOD: 'Jordanian Dinar',             JPY: 'Japanese Yen',                KWD: 'Kuwaiti Dinar',
-    LKR: 'Sri Lankan Rupee',                OMR: 'Omani Rial',                  PHP: 'Philippine Peso',             PKR: 'Pakistani Rupee',
-    QAR: 'Qatari Riyal',                    SAR: 'Saudi Arabian Riyal',         SGD: 'Singapore Dollar',            THB: 'Thai Baht',
-    AUD: 'Australian Dollar',               FJD: 'Fijian Dollar',               NZD: 'New Zealand Dollar'
-}
+    BBD: 'Barbadian or Bajan Dollar',
+    BSD: 'Bahamian Dollar',
+    CAD: 'Canadian Dollar',
+    JMD: 'Jamaican Dollar',
+    MXN: 'Mexican Peso',
+    USD: 'US Dollar',
+    XCD: 'East Caribbean Dollar',
+    BZD: 'Belizean Dollar',
+    TTD: 'Trinidadian Dollar',
+    BGN: 'Bulgarian Lev',
+    CHF: 'Swiss Franc',
+    CZK: 'Czech Koruna',
+    DKK: 'Danish Krone',
+    EUR: 'Euro',
+    GBP: 'British Pound',
+    HRK: 'Croatian Kuna',
+    HUF: 'Hungarian Forint',
+    ILS: 'Israeli Shekel',
+    NOK: 'Norwegian Krone',
+    PLN: 'Polish Zloty',
+    RON: 'Romanian Leu',
+    RSD: 'Serbian Dinar',
+    SEK: 'Swedish Krona',
+    TRY: 'Turkish Lira',
+    BWP: 'Botswana Pula',
+    GHS: 'Ghanaian Cedi',
+    KES: 'Kenyan Shilling',
+    LSL: 'Basotho Loti',
+    MUR: 'Mauritian Rupee',
+    MWK: 'Malawian Kwacha',
+    SZL: 'Swazi Lilangeni',
+    TND: 'Tunisian Dinar',
+    ZAR: 'South African Rand',
+    ZMW: 'Zambian Kwacha',
+    AED: 'Emirati Dirham',
+    BHD: 'Bahraini Dinar',
+    HKD: 'Hong Kong Dollar',
+    JOD: 'Jordanian Dinar',
+    JPY: 'Japanese Yen',
+    KWD: 'Kuwaiti Dinar',
+    LKR: 'Sri Lankan Rupee',
+    OMR: 'Omani Rial',
+    PHP: 'Philippine Peso',
+    PKR: 'Pakistani Rupee',
+    QAR: 'Qatari Riyal',
+    SAR: 'Saudi Arabian Riyal',
+    SGD: 'Singapore Dollar',
+    THB: 'Thai Baht',
+    AUD: 'Australian Dollar',
+    FJD: 'Fijian Dollar',
+    NZD: 'New Zealand Dollar'
+};
 
 /* Default Values */
 var coins    = {
@@ -55,34 +93,40 @@ var coins    = {
     "XVG":   [0, 0, 0, false],
     "XRP":   [0, 0, 0, false],
     "DOGE":  [0, 0, 0, false]
-}
+};
 
 var settings = {
-    isAerts:  false, 
-    email:    '', 
-    pollTime: 30000, 
-    currency: 'USD' 
-}
+    isAerts:    false,
+    email:      '',
+    pollTime:   30000,
+    currency:   'USD'
+};
 
 /* Convert scientific notation */
-Number.prototype.noExponents = function() {
-    var data = String(this).split(/[eE]/);
-    if (data.length == 1) return data[0]; 
-    var z    = '', sign = this < 0 ? '-' : '',
+Number.prototype.noExponents = function () {
+    var data = String(this).split(/[eE]/),
+        z    = '';
+    
+    if (data.length === 1) { return data[0]; }
+    
+    var sign = this < 0 ? '-' : '',
+        str  = data[0].replace('.', ''),
+        mag  = Number(data[1]) + 1;
 
-    str = data[0].replace('.', ''),
-    mag = Number(data[1]) + 1;
-
-    if (mag < 0){
+    if (mag < 0) {
         z = sign + '0.';
-        while(mag++) z += '0';
+        while (mag++) 
+            z += '0';
+        
         return z + str.replace(/^\-/,'');
     }
 
-    mag -= str.length;  
-    while(mag--) z += '0';
+    mag -= str.length;
+    while (mag--) 
+        z += '0';
+    
     return str + z;
-}
+};
 
 /* Make sure there are 2 decimal places */
 Number.prototype.twoDec = function() {
@@ -94,27 +138,139 @@ Number.prototype.twoDec = function() {
     }
 
     return str;
+};
+
+String.prototype.reverse = function() {
+    return this.split("").reverse("").join("");
+}
+
+String.prototype.insertColors = function(Color1, Color2, reverse) {
+    var srcStr = this;
+
+    if (reverse)
+        srcStr = srcStr.reverse();
+    
+    var iterator = srcStr.split(/(\d{3})/).entries(), 
+        endStr   = "",
+        color    = Color2;
+
+    if (reverse)
+        color = Color2.reverse();
+    
+    for (let e of iterator) {
+        if (e[1] != '') {
+            if (reverse) endStr += e[1] + color; else endStr += color + e[1];
+        
+            if (reverse)
+                if (color == Color1.reverse()) color = Color2.reverse(); else color = Color1.reverse();
+            else
+                if (color == Color1) color = Color2; else color = Color1;
+        }
+    }
+    
+    if (reverse)
+        endStr = endStr.reverse();
+
+    return endStr;
+}
+
+String.prototype.toColorNumber = function(Color1, Color2) {
+    var src = '' + this,
+        seg = [];
+    
+    if (src.includes(".") ) {
+        seg = src.split('.');
+        
+        seg[0] = seg[0].insertColors(Color1, Color2, true);
+        seg[1] = seg[1].insertColors(Color1, Color2, false);
+        
+        src = seg[0] + '^G.' + seg[1];
+    }
+    
+    return src;
 }
 
 /* Color formatting for the terminal */
 var cWrite = function(str) {
     colorNext = false;
 
-    for (counter=0; counter<str.length; counter++) {
+    for (counter = 0; counter < str.length; counter++) {
         if (colorNext) {
             cursor.fg.reset();
             cursor.bg.reset();
 
             switch (str[counter]) {
-                case 'w': cursor.fg.white();    break;        case 'W': cursor.fg.brightWhite();    break;
-                case 'b': cursor.fg.blue();     break;        case 'B': cursor.fg.brightBlue();     break;
-                case 'c': cursor.fg.cyan();     break;        case 'C': cursor.fg.brightCyan();     break;
-                case 'e': cursor.fg.green();    break;        case 'E': cursor.fg.brightGreen();    break;
-                case 'm': cursor.fg.magenta();  break;        case 'M': cursor.fg.brightMagenta();  break;
-                case 'r': cursor.fg.red();      break;        case 'R': cursor.fg.brightRed();      break;
-                case 'y': cursor.fg.yellow();   break;        case 'Y': cursor.fg.brightYellow();   break;
-                case 'g': cursor.fg.black();    break;        case 'G': cursor.fg.brightBlack();    break;
-                case 'n': console.log();        break;        case 's': cursor.beep();              break;
+                case 'w':
+                    cursor.fg.white();
+                    break;
+                
+                case 'W':
+                    cursor.fg.brightWhite();
+                    break;
+                
+                case 'b':
+                    cursor.fg.blue();
+                    break;
+                
+                case 'B':
+                    cursor.fg.brightBlue();
+                    break;
+                
+                case 'c':
+                    cursor.fg.cyan();
+                    break;
+                
+                case 'C':
+                    cursor.fg.brightCyan();
+                    break;
+                
+                case 'e':
+                    cursor.fg.green();
+                    break;
+                
+                case 'E':
+                    cursor.fg.brightGreen();
+                    break;
+                
+                case 'm':
+                    cursor.fg.magenta();
+                    break;
+                
+                case 'M':
+                    cursor.fg.brightMagenta();
+                    break;
+                
+                case 'r':
+                    cursor.fg.red();
+                    break;
+                
+                case 'R':
+                    cursor.fg.brightRed();
+                    break;
+                
+                case 'y':
+                    cursor.fg.yellow();
+                    break;
+                
+                case 'Y':
+                    cursor.fg.brightYellow();
+                    break;
+                
+                case 'g':
+                    cursor.fg.black();
+                    break;
+                
+                case 'G':
+                    cursor.fg.brightBlack();
+                    break;
+
+                case 'n':
+                    console.log();
+                    break;
+
+                case 's':
+                    cursor.beep();
+                    break;
             }
 
             colorNext = false;
@@ -124,7 +280,7 @@ var cWrite = function(str) {
             else 
                 cursor.write(str[counter]);
     }
-}
+};
 
 /* Get a list of symbols */
 var getSymbols = function() {
@@ -142,7 +298,7 @@ var getSymbols = function() {
         forceUpdate();
     });
     return Coins;
-}
+};
 
 /* Is this a symbol? */
 var isSymbol = function(sym) {
@@ -152,7 +308,7 @@ var isSymbol = function(sym) {
     }
 
     return true;
-}
+};
 
 /* Get new BTC Data */
 var forceUpdate = function() {
@@ -167,7 +323,7 @@ var forceUpdate = function() {
         clearInterval(Refresh);
         Refresh = setInterval(forceUpdate, settings.pollTime);
     }
-}
+};
 
 var viewDetail = function(key, d) {
     s = d[key][settings.currency];
@@ -190,20 +346,20 @@ var viewDetail = function(key, d) {
     }
 
     cWrite("^n");
-    cWrite("^R> ^WPrice       ^G: $^C" + s.PRICE + "^G " + settings.currency + "^n");
-    cWrite("^R> ^W24hr Open   ^G: $^C" + s.OPEN24HOUR + "^G " + settings.currency + "^n");
-    cWrite("^R> ^W24hr High   ^G: $^C" + s.HIGH24HOUR + "^G " + settings.currency + "^n");
-    cWrite("^R> ^W24hr Low    ^G: $^C" + s.LOW24HOUR + "^G " + settings.currency + "^n");
+    cWrite("^R> ^WPrice       ^G: $^C" + ('' + s.PRICE).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
+    cWrite("^R> ^W24hr Open   ^G: $^C" + ('' + s.OPEN24HOUR).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
+    cWrite("^R> ^W24hr High   ^G: $^C" + ('' + s.HIGH24HOUR).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
+    cWrite("^R> ^W24hr Low    ^G: $^C" + ('' + s.LOW24HOUR).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
     cWrite("^n");
-    cWrite("^R> ^W24hr Volume ^G: ^C" + s.VOLUME24HOUR + "^n");
-    cWrite("^R> ^W24hr Change ^G: ^C" + s.CHANGE24HOUR + "^n");
+    cWrite("^R> ^W24hr Volume ^G: ^C" + ('' + s.VOLUME24HOUR).toColorNumber('^C', '^c') + "^n");
+    cWrite("^R> ^W24hr Change ^G: ^C" + ('' + s.CHANGE24HOUR).toColorNumber('^C', '^c') + "^n");
     cWrite("^n");
-    cWrite("^R> ^WSupply      ^G: ^C" + s.SUPPLY + "^n");
-    cWrite("^R> ^WMarket Cap  ^G: ^C" + s.MKTCAP + "^n");
+    cWrite("^R> ^WSupply      ^G: ^C" + ('' + s.SUPPLY).toColorNumber('^C', '^c') + "^n");
+    cWrite("^R> ^WMarket Cap  ^G: ^C" + ('' + s.MKTCAP).toColorNumber('^C', '^c') + "^n");
     cWrite(prompt);
     
     suspend = false;
-}
+};
 
 /* New BTC Data 6*/
 BTCUpdate.on('updates', function(coinData) {
