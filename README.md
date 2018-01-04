@@ -26,6 +26,10 @@ in seconds.
 on your investments without having to look at them all day.
 - Updates data every 30 seconds and redisplays the grid.
 
+## **Newest Features**:
+- Detail View
+- Sound Toggle
+- Colorize numbers to assist in reading
 
 ## **Planned Features**:
 - Email/SMS Notifications
@@ -39,3 +43,4 @@ on your investments without having to look at them all day.
 - U : Force an update
 - S : Search the symbols
 - D : Details on any symbol
+- O : Toggle Sound

@@ -22,11 +22,11 @@ var prompt     = "^n^G["             +
                  "^CC^wurrency^G : " +
                  "^CS^wearch^G : "   +
                  "^CD^wetails^G : "  +
-                 "^wS^Co^wund"       +
-                 "^G]^n^G[.... "     +
-                 "^CU^wpdate^G : "   +
-                 "^CA^wdd^G : "      +
-                 "^CR^wemove^G : "   +
+                 "^wS^Co^wunds"      +
+                 "^G]^n^G["          +
+                 "  ^CU^wpdate^G : " +
+                 "   ^CA^wdd^G : "   +
+                 " ^CR^wemove^G : "  +
                  "^CL^wimits"        +
                  "^G]: ^W";
 
@@ -280,9 +280,8 @@ function menuHandler(key) {
             case 'o':
                 settings.isSound = !settings.isSound;
                 outStr = settings.isSound ? 'Sound ON' : 'Sound OFF';
-                utils.writeLine("^n^R> ^MSound Toggle^G: ^C${0}", [ outStr ]);
+                utils.writeLine("^n^R> ^WSound Toggle^G: ^C${0}", [ outStr ]);
                 break;
-
 
             case 'd': 
                 suspend = true;
