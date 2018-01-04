@@ -235,6 +235,23 @@ BTCUpdate.on('updates', function(coinData) {
 function menuHandler(key) {
     if (!(suspend || key.length <= 0)) {
         switch(key[0].toLowerCase()) {
+            case '?': 
+                utils.writeLine("^n^R> ^M${0}", [ 'Settings' ] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'Q' , 'Quit'] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'C' , 'Set currency'] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'U' , 'Force an update'] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'O' , 'Toggle Sound'] );
+
+                utils.writeLine("^n^R> ^M${0}", [ 'Tracking' ] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'A' , 'Add a symbol to tracking'] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'R' , 'Remove a symbol to tracking'] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'L' , 'Adjust a tracked symbols price limits'] );
+
+                utils.writeLine("^n^R> ^M${0}", [ 'Research' ] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'S' , 'Search symbols'] );
+                utils.writeLine("^R> ^W${0}^G: ^C${1}", [ 'D' , 'Detail View'] );
+                break;
+
             case 'q': 
                 process.exit(); 
                 break;
