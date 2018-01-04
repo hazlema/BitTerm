@@ -1,8 +1,10 @@
 /*
  * BitTerm v1, Simple Bitcoin Tracking & Alerts
- * By: FrostyCrits (BTC: 1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq
+ * By: FrostyCrits
+* XVG: DFZeD7tNLDFvX3yre9RodBCEvY6mW9gD95
+* BTC: 1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq
  *
- * If you use this, please donate to my BTC address
+ * If you use this, please donate to my XVG or BTC address
  */
 global.fetch   = require('node-fetch');
 
@@ -420,6 +422,7 @@ function menuHandler(key) {
  ******************************************************/
 utils.writeLine();
 utils.writeLine("^R> ^WBitTerm Alerts v1^G: ^WBy: ^EFrostyCrits ^G(^wDec, 2017^G)");
+utils.writeLine("^R> ^WXVG^G: ^CDFZeD7tNLDFvX3yre9RodBCEvY6mW9gD95");
 utils.writeLine("^R> ^WBTC^G: ^Y1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq");
 
 /* Load any saved data */

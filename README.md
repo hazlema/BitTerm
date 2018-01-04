@@ -2,11 +2,12 @@
 Bitcoin Tracking and Alerts<br>
 <br>
 **Author**:<br>
-Matthew Hazlett, Dec 2017<br>
+Matthew Hazlett, Jan 2017<br>
 <br>
-**BTC**:<br>
-1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq<br>
-**If you use this app please consider donating to my BitCoin address**<br>
+**BTC**: 1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq<br>
+**XVG**: DFZeD7tNLDFvX3yre9RodBCEvY6mW9gD95<br>
+
+**If you use this app please consider donating to one of my BitCoin addresses**<br>
 
 ## **Screenshots**:
 ![Screenshot #1](/gfx/screenshot.gif)<br>
