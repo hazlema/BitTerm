@@ -22,7 +22,7 @@ var prompt     = "^n^G["             +
                  "^CC^wurrency^G : " +
                  "^CS^wearch^G : "   +
                  "^CD^wetails^G : "  +
-                 "^CS^wound"         +
+                 "^wS^Co^wund"       +
                  "^G]^n^G[.... "     +
                  "^CU^wpdate^G : "   +
                  "^CA^wdd^G : "      +
@@ -36,7 +36,7 @@ var prompt     = "^n^G["             +
 var currencies = {
     BBD: 'Barbadian or Bajan Dollar',   BSD: 'Bahamian Dollar',          CAD: 'Canadian Dollar',
     JMD: 'Jamaican Dollar',             MXN: 'Mexican Peso',             USD: 'US Dollar',
-    XCD: 'East Caribbean Dollar',       BZD: 'Belizean Dollar',          TTD: 'Tr inidadian Dollar',
+    XCD: 'East Caribbean Dollar',       BZD: 'Belizean Dollar',          TTD: 'Trinidadian Dollar',
     BGN: 'Bulgarian Lev',               CHF: 'Swiss Franc',              CZK: 'Czech Koruna',
     DKK: 'Danish Krone',                EUR: 'Euro',                     GBP: 'British Pound',
     HRK: 'Croatian Kuna',               HUF: 'Hungarian Forint',         ILS: 'Israeli Shekel',
@@ -63,7 +63,7 @@ var coins = {
 };
 
 var settings = {
-    isAerts:  false,
+    isSound:  false,
     email:    '',
     pollTime: 30000,
     currency: 'USD'
@@ -199,11 +199,15 @@ BTCUpdate.on('updates', function(coinData) {
             sNme  = cSym.length >= 10 ? cSym.substr(0, 8) : cSym.padEnd(lenNME + 1);
  
            // Set warning  (^s = Beep Sound / Win Beep Sound)
-            if (coins[thisCoin][0] != 0 && coins[thisCoin][0] < cData[sCurr]) 
-                warnTxt = " ^s^G: ^MAbove Limit^G: ^W" + coins[thisCoin][0] + " " + sCurr;
-
-            if (coins[thisCoin][1] != 0 && coins[thisCoin][1] > cData[sCurr]) 
-                warnTxt = " ^s^G: ^MBelow Limit^G: ^W" + coins[thisCoin][1] + " " + sCurr;
+            if (coins[thisCoin][0] != 0 && coins[thisCoin][0] < cData[sCurr]) {
+                warnTxt = " ^G: ^MAbove Limit^G: ^W" + coins[thisCoin][0] + " " + sCurr;
+                if (settings.isSound) warnTxt += '^s';
+            }
+            
+            if (coins[thisCoin][1] != 0 && coins[thisCoin][1] > cData[sCurr]) {
+                warnTxt = " ^G: ^MBelow Limit^G: ^W" + coins[thisCoin][1] + " " + sCurr;
+                if (settings.isSound) warnTxt += '^s';
+            }
 
             utils.writeLine('^W${0} ^G: ^C${1} ^G: ^W${2}^wcoin ^G: ^W${3}${4} ${5}${6}', [
                 thisCoin.padStart(7),
@@ -272,6 +276,13 @@ function menuHandler(key) {
                 utils.write("^n^G[^wSearch^G]: ^W")
                 inputTask = "searchSymbols";
                 break;
+
+            case 'o':
+                settings.isSound = !settings.isSound;
+                outStr = settings.isSound ? 'Sound ON' : 'Sound OFF';
+                utils.writeLine("^n^R> ^MSound Toggle^G: ^C${0}", [ outStr ]);
+                break;
+
 
             case 'd': 
                 suspend = true;
