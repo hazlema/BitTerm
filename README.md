@@ -1,4 +1,4 @@
-# **BitTerm v1a** 
+# **BitTerm v1** 
 Bitcoin Tracking and Alerts<br>
 <br>
 **Author**:<br>
@@ -36,10 +36,10 @@ on your investments without having to look at them all day.
 
 ## **Commands**:
 - Q : Quit
-- C : Set currency type (ex. usd)
-- A : Add a symbol (ex. xvg)
-- R : Remove a symbol (ex. xvg)
-- L : Set price limits (ex. xvg, .15, .13)
+- C : Set currency type
+- A : Add a symbol
+- R : Remove a symbol
+- L : Set price limits
 - U : Force an update
 - S : Search the symbols
 - D : Details on any symbol
