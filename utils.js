@@ -4,9 +4,19 @@ var cursor     = ansi(process.stdout);
 /******************************************************
  * Desc: Color formatting for the terminal
  ******************************************************/
-var write = function(str) {
-    colorNext = false;
+var write = function(str, params) {
+    var colorNext = false;
+    if (str === undefined) str = '';
 
+    // Replace ${...}
+    if (params) { 
+        for (let i of str.match(/[${](\w+)[}]/g).entries()) {
+            rep = i[1].replace("{", "").replace("}", "");
+            str = str.replace('$'+i[1], params[parseInt(rep)]);
+        }
+    }
+    
+    // Colorize
     for (counter = 0; counter < str.length; counter++) {
         if (colorNext) {
             cursor.fg.reset();
@@ -40,6 +50,11 @@ var write = function(str) {
             else 
                 cursor.write(str[counter]);
     }
+}
+
+var writeLine = function(str, params) {
+    if (str === undefined) str = '';
+    return write(str + '^n', params)
 }
 
 /******************************************************
@@ -136,13 +151,22 @@ String.prototype.toColorNumber = function(Color1, Color2) {
         seg[0] = seg[0].insertColors(Color1, Color2, true);
         seg[1] = seg[1].insertColors(Color1, Color2, false);
         
-        src = seg[0] + '^G.' + seg[1];
+        src = seg[0] + '^R.' + seg[1];
     }
     return src;
 }
 
+Number.prototype.toColorNumber = function(Color1, Color2) {
+    return (this + '').toColorNumber(Color1, Color2);
+}
+
+Number.prototype.padEnd   = function(args) { return ('' + this).padEnd(args);   };
+Number.prototype.padStart = function(args) { return ('' + this).padStart(args); };
+
+    
 module.exports = {
   ansi,
   cursor,
-  write
+  write,
+  writeLine
 }

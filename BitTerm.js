@@ -92,7 +92,7 @@ var getSymbols = function() {
  ******************************************************/
 var isSymbol = function(sym) {
     if (!symbols[sym]) {
-        utils.write("^n^R> ^G[^C"+sym+"^G] ^wis not a symbol.^n");
+        utils.writeLine("^n^R> ^G[^C${0}^G] ^wis not a symbol.", [ sym ]);
         return false;
     }
 
@@ -123,35 +123,38 @@ var viewDetail = function(key, d) {
     s = d[key][settings.currency];
 
     utils.write("^n");
-    utils.write("^R> ^WSymbol      ^G: ^C" + key + "^n");
-    utils.write("^R> ^WName        ^G: ^C" + symbols[key] + "^n");
+    utils.write("^R> ^WSymbol      ^G: ^C${0}^n", [ key ]);
+    utils.write("^R> ^WName        ^G: ^C${0}^n", [ symbols[key] ]);
     
-    if ( coins[key] ) {
-        utils.write("^n");
+    if (coins[key]) {
+        utils.writeLine();
+        
         if (coins[key][0] == 0) 
-            utils.write("^R> ^YUpper Limit ^G: ^RUpper limit is not set.^n");
+            utils.writeLine("^R> ^YUpper Limit ^G: ^RUpper limit is not set");
         else
-            utils.write("^R> ^YUpper Limit ^G: ^C" + coins[key][0].twoDec() + "^G " + settings.currency + "^n");
+            utils.writeLine("^R> ^YUpper Limit ^G: ^C${0}^G ${1}", [ coins[key][0].twoDec(), settings.currency ]);
 
         if (coins[key][1] == 0) 
-            utils.write("^R> ^YLower Limit ^G: ^RLower limit is not set.^n");
+            utils.writeLine("^R> ^YLower Limit ^G: ^RLower limit is not set");
         else
-            utils.write("^R> ^YLower Limit ^G: ^C" + coins[key][1].twoDec() + "^G " + settings.currency + "^n");
+            utils.writeLine("^R> ^YLower Limit ^G: ^C${0}^G ${1}^n", [ coins[key][1].twoDec(), settings.currency ]);
     }
 
-    utils.write("^n");
-    utils.write("^R> ^WPrice       ^G: $^C" + ('' + s.PRICE).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
-    utils.write("^R> ^W24hr Open   ^G: $^C" + ('' + s.OPEN24HOUR).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
-    utils.write("^R> ^W24hr High   ^G: $^C" + ('' + s.HIGH24HOUR).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
-    utils.write("^R> ^W24hr Low    ^G: $^C" + ('' + s.LOW24HOUR).toColorNumber('^C', '^c') + "^G " + settings.currency + "^n");
-    utils.write("^n");
-    utils.write("^R> ^W24hr Volume ^G: ^C" + ('' + s.VOLUME24HOUR).toColorNumber('^C', '^c') + "^n");
-    utils.write("^R> ^W24hr Change ^G: ^C" + ('' + s.CHANGE24HOUR).toColorNumber('^C', '^c') + "^n");
-    utils.write("^n");
-    utils.write("^R> ^WSupply      ^G: ^C" + ('' + s.SUPPLY).toColorNumber('^C', '^c') + "^n");
-    utils.write("^R> ^WMarket Cap  ^G: ^C" + ('' + s.MKTCAP).toColorNumber('^C', '^c') + "^n");
+    utils.writeLine();
+    utils.writeLine("^R> ^WPrice       ^G: $^C${0}^G ${1}", [ s.PRICE.toColorNumber('^C', '^w'), settings.currency ]);
+    utils.writeLine("^R> ^W24hr Open   ^G: $^C${0}^G ${1}", [ s.OPEN24HOUR.toColorNumber('^C', '^w'), settings.currency ]);
+    utils.writeLine("^R> ^W24hr High   ^G: $^C${0}^G ${1}", [ s.HIGH24HOUR.toColorNumber('^C', '^w'), settings.currency ]);
+    utils.writeLine("^R> ^W24hr Low    ^G: $^C${0}^G ${1}", [ s.LOW24HOUR.toColorNumber('^C', '^w'), settings.currency ]);
+
+    utils.writeLine();
+    utils.writeLine("^R> ^W24hr Volume ^G: ^C${0}", [ s.VOLUME24HOUR.toColorNumber('^C', '^w') ]);
+    utils.writeLine("^R> ^W24hr Change ^G: ^C${0}", [ s.CHANGE24HOUR.toColorNumber('^C', '^w') ]);
+
+    utils.writeLine("");
+    utils.writeLine("^R> ^WSupply      ^G: ^C${0}", [ s.SUPPLY.toColorNumber('^C', '^w') ]);
+    utils.writeLine("^R> ^WMarket Cap  ^G: ^C${0}", [ s.MKTCAP.toColorNumber('^C', '^w') ]);
+
     utils.write(prompt);
-    
     suspend = false;
 };
 
@@ -164,7 +167,9 @@ BTCUpdate.on('updates', function(coinData) {
     lenNME = 0;
 
     if (!suspend) {
-        utils.write("^n^n^R> ^wLast update^G: ^W" + (new Date()).toLocaleString().replace(/-/g, "^G-^W").replace(/:/g, "^G:^W") + "^n^n");
+        utils.writeLine("^n^n^R> ^wLast update^G: ^W${0}^n", [ 
+            (new Date()).toLocaleString().replace(/-/g, "^G-^W").replace(/:/g, "^G:^W")
+        ]);
 
         /* Determin padding size */
         for (let thisCoin in coinData) {
@@ -179,25 +184,36 @@ BTCUpdate.on('updates', function(coinData) {
 
         /* Display the data */
         for (let thisCoin in coinData) {
-            /* Select color based on last price */ 
+            // CoinData Shortcut(s)
+            var cData   = coinData[thisCoin],
+                sCurr   = settings.currency,
+                cSym    = symbols[thisCoin],
+                warnTxt = "";
+            
+            // Select color based on last price */ 
             clr = "^Y";
-            if (coins[thisCoin][2] > coinData[thisCoin][settings.currency]) clr = "^R";
-            if (coins[thisCoin][2] < coinData[thisCoin][settings.currency]) clr = "^E";
+            if (coins[thisCoin][2] > cData[sCurr]) clr = "^R";
+            if (coins[thisCoin][2] < cData[sCurr]) clr = "^E";
 
-            strCoin = ('' + thisCoin).padStart(7);
-            strBTC  = ('' + coinData[thisCoin].BTC.noExponents()).padEnd(lenBTC + 1);
-            strUSD  = ('' + coinData[thisCoin][settings.currency]).padStart(lenUSD);
-            strNME = symbols[thisCoin].length >= 10 ? symbols[thisCoin].substr(0, 8) : symbols[thisCoin].padEnd(lenNME + 1);
+            // If length of string is above 10 chop it
+            sNme  = cSym.length >= 10 ? cSym.substr(0, 8) : cSym.padEnd(lenNME + 1);
  
-           /* Show a warning */
-            warnTxt = "";
-            if (coins[thisCoin][0] != 0 && coins[thisCoin][0] < coinData[thisCoin][settings.currency]) 
-                warnTxt = " ^s^G: ^MAbove Limit^G: ^W" + coins[thisCoin][0] + " " + settings.currency;
+           // Set warning  (^s = Beep Sound / Win Beep Sound)
+            if (coins[thisCoin][0] != 0 && coins[thisCoin][0] < cData[sCurr]) 
+                warnTxt = " ^s^G: ^MAbove Limit^G: ^W" + coins[thisCoin][0] + " " + sCurr;
 
-            if (coins[thisCoin][1] != 0 && coins[thisCoin][1] > coinData[thisCoin][settings.currency]) 
-                warnTxt = " ^s^G: ^MBelow Limit^G: ^W" + coins[thisCoin][1] + " " + settings.currency;
+            if (coins[thisCoin][1] != 0 && coins[thisCoin][1] > cData[sCurr]) 
+                warnTxt = " ^s^G: ^MBelow Limit^G: ^W" + coins[thisCoin][1] + " " + sCurr;
 
-            utils.write("^W" + strCoin + " ^G: ^C" + strNME + " ^G: ^W" + strBTC + "^wcoin ^G: ^W" + clr + strUSD + " " + settings.currency + warnTxt + "^n");
+            utils.writeLine('^W${0} ^G: ^C${1} ^G: ^W${2}^wcoin ^G: ^W${3}${4} ${5}${6}', [
+                thisCoin.padStart(7),
+                sNme, 
+                cData.BTC.noExponents().padEnd(lenBTC + 1), 
+                clr,
+                cData[sCurr].padStart(lenUSD),
+                sCurr,
+                warnTxt
+            ]);
         } 
 
          /* Update all the last prices */
@@ -375,20 +391,20 @@ function menuHandler(key) {
 /******************************************************
  * Desc: Main Block
  ******************************************************/
-utils.write("^n");
-utils.write("^R> ^WBitTerm Alerts v1^G: ^WBy: ^EFrostyCrits ^G(^wDec, 2017^G)^n");
-utils.write("^R> ^WBTC^G: ^Y1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq^n");
+utils.writeLine();
+utils.writeLine("^R> ^WBitTerm Alerts v1^G: ^WBy: ^EFrostyCrits ^G(^wDec, 2017^G)");
+utils.writeLine("^R> ^WBTC^G: ^Y1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq");
 
 /* Load any saved data */
 if (fs.existsSync('./settings.json')) {
-    utils.write("^n^R> ^WLoading settings^G...^n");
+    utils.writeLine("^n^R> ^WLoading settings^G...");
     settings = require('./settings.json');
-} else utils.write("^n^R> ^WUsing default settings^G...^n");
+} else utils.writeLine("^n^R> ^WUsing default settings^G...");
 
 if (fs.existsSync('./holdings.json')) {
-    utils.write("^R> ^WLoading holdings^G...^n");
+    utils.writeLine("^R> ^WLoading holdings^G...");
     coins = require('./holdings.json');
-} else utils.write("^R> ^WUsing default holdings^G...^n");
+} else utils.writeLine("^R> ^WUsing default holdings^G...");
 
 /* Fetch latest symbols */
 utils.write("^R> ^WFetching symbols^G... ^WPlease Wait^G...");
