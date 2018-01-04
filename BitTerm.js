@@ -9,7 +9,7 @@ global.fetch   = require('node-fetch');
 var cc         = require('cryptocompare');
 var fs         = require('fs');
 var events     = require('events');
-var utils      = require('./utils.js');
+var utils      = require('./utils.js');         // Most of the functions and prototypes are here
 
 var BTCUpdate  = new events.EventEmitter();
 var inputArray = [];
@@ -18,57 +18,59 @@ var Refresh;
 
 var symbols    = {};
 var suspend    = false;
-var prompt     = "^n^G[" +
-                 "^CQ^wuit^G : " +
+var prompt     = "^n^G["             +
                  "^CC^wurrency^G : " +
-                 "^CS^wearch^G : " +
-                 "^CD^wetails" +
-                 "^G]^n^G[: " +
-                 "^CU^wpdate^G : " +
-                 "^CA^wdd^G : " +
-                 "^CR^wemove^G : " +
-                 "^CL^wimits " +
-                 "^G:]: ^W";
+                 "^CS^wearch^G : "   +
+                 "^CD^wetails^G : "  +
+                 "^CS^wound"         +
+                 "^G]^n^G[.... "     +
+                 "^CU^wpdate^G : "   +
+                 "^CA^wdd^G : "      +
+                 "^CR^wemove^G : "   +
+                 "^CL^wimits"        +
+                 "^G]: ^W";
 
 /******************************************************
- * Desc: Default Values
+ * Default Values
  ******************************************************/
 var currencies = {
-    BBD: 'Barbadian or Bajan Dollar',   BSD: 'Bahamian Dollar',     CAD: 'Canadian Dollar',
-    JMD: 'Jamaican Dollar',             MXN: 'Mexican Peso',        USD: 'US Dollar',
-    XCD: 'East Caribbean Dollar',       BZD: 'Belizean Dollar',     TTD: 'Trinidadian Dollar',
-    BGN: 'Bulgarian Lev',               CHF: 'Swiss Franc',         CZK: 'Czech Koruna',
-    DKK: 'Danish Krone',                EUR: 'Euro',                GBP: 'British Pound',
-    HRK: 'Croatian Kuna',               HUF: 'Hungarian Forint',    ILS: 'Israeli Shekel',
-    NOK: 'Norwegian Krone',             PLN: 'Polish Zloty',        RON: 'Romanian Leu',
-    RSD: 'Serbian Dinar',               SEK: 'Swedish Krona',       TRY: 'Turkish Lira',
-    BWP: 'Botswana Pula',               GHS: 'Ghanaian Cedi',       KES: 'Kenyan Shilling',
-    LSL: 'Basotho Loti',                MUR: 'Mauritian Rupee',     MWK: 'Malawian Kwacha',
-    SZL: 'Swazi Lilangeni',             TND: 'Tunisian Dinar',      ZAR: 'South African Rand',
-    ZMW: 'Zambian Kwacha',              AED: 'Emirati Dirham',      BHD: 'Bahraini Dinar',
-    HKD: 'Hong Kong Dollar',            JOD: 'Jordanian Dinar',     JPY: 'Japanese Yen',
-    KWD: 'Kuwaiti Dinar',               LKR: 'Sri Lankan Rupee',    OMR: 'Omani Rial',
-    PHP: 'Philippine Peso',             PKR: 'Pakistani Rupee',     QAR: 'Qatari Riyal',
-    SAR: 'Saudi Arabian Riyal',         SGD: 'Singapore Dollar',    THB: 'Thai Baht',
-    AUD: 'Australian Dollar',           FJD: 'Fijian Dollar',       NZD: 'New Zealand Dollar'
+    BBD: 'Barbadian or Bajan Dollar',   BSD: 'Bahamian Dollar',          CAD: 'Canadian Dollar',
+    JMD: 'Jamaican Dollar',             MXN: 'Mexican Peso',             USD: 'US Dollar',
+    XCD: 'East Caribbean Dollar',       BZD: 'Belizean Dollar',          TTD: 'Tr inidadian Dollar',
+    BGN: 'Bulgarian Lev',               CHF: 'Swiss Franc',              CZK: 'Czech Koruna',
+    DKK: 'Danish Krone',                EUR: 'Euro',                     GBP: 'British Pound',
+    HRK: 'Croatian Kuna',               HUF: 'Hungarian Forint',         ILS: 'Israeli Shekel',
+    NOK: 'Norwegian Krone',             PLN: 'Polish Zloty',             RON: 'Romanian Leu',
+    RSD: 'Serbian Dinar',               SEK: 'Swedish Krona',            TRY: 'Turkish Lira',
+    BWP: 'Botswana Pula',               GHS: 'Ghanaian Cedi',            KES: 'Kenyan Shilling',
+    LSL: 'Basotho Loti',                MUR: 'Mauritian Rupee',          MWK: 'Malawian Kwacha',
+    SZL: 'Swazi Lilangeni',             TND: 'Tunisian Dinar',           ZAR: 'South African Rand',
+    ZMW: 'Zambian Kwacha',              AED: 'Emirati Dirham',           BHD: 'Bahraini Dinar',
+    HKD: 'Hong Kong Dollar',            JOD: 'Jordanian Dinar',          JPY: 'Japanese Yen',
+    KWD: 'Kuwaiti Dinar',               LKR: 'Sri Lankan Rupee',         OMR: 'Omani Rial',
+    PHP: 'Philippine Peso',             PKR: 'Pakistani Rupee',          QAR: 'Qatari Riyal',
+    SAR: 'Saudi Arabian Riyal',         SGD: 'Singapore Dollar',         THB: 'Thai Baht',
+    AUD: 'Australian Dollar',           FJD: 'Fijian Dollar',            NZD: 'New Zealand Dollar'
 };
-var coins      = {
-    "BTC":   [0, 0, 0, false],
-    "ETH":   [0, 0, 0, false],
-    "LTC":   [0, 0, 0, false],
-    "XVG":   [0, 0, 0, false],
-    "XRP":   [0, 0, 0, false],
-    "DOGE":  [0, 0, 0, false]
+
+var coins = {
+    "BTC":  [0, 0, 0, false],
+    "ETH":  [0, 0, 0, false],
+    "LTC":  [0, 0, 0, false],
+    "XVG":  [0, 0, 0, false],
+    "XRP":  [0, 0, 0, false],
+    "DOGE": [0, 0, 0, false]
 };
-var settings   = {
-    isAerts:    false,
-    email:      '',
-    pollTime:   30000,
-    currency:   'USD'
+
+var settings = {
+    isAerts:  false,
+    email:    '',
+    pollTime: 30000,
+    currency: 'USD'
 };
 
 /******************************************************
- * Desc: Get a list of symbols
+ * Get a list of symbols
  ******************************************************/
 var getSymbols = function() {
     Coins = new Array();
@@ -83,24 +85,22 @@ var getSymbols = function() {
         fs.writeFile("symbols.json", JSON.stringify(symbols, null, 2), function(){});
         forceUpdate();
     });
-
     return Coins;
 };
 
 /******************************************************
- * Desc: Is this a symbol?
+ * Is this a symbol?
  ******************************************************/
 var isSymbol = function(sym) {
     if (!symbols[sym]) {
         utils.writeLine("^n^R> ^G[^C${0}^G] ^wis not a symbol.", [ sym ]);
         return false;
     }
-
     return true;
 };
 
 /******************************************************
- * Desc: Get new BTC Data
+ * Get new BTC Data
  ******************************************************/
 var forceUpdate = function() {
     if (!suspend) {
@@ -117,7 +117,7 @@ var forceUpdate = function() {
 };
 
 /******************************************************
- * Desc: View the details of a symbol
+ * View the details of a symbol
  ******************************************************/
 var viewDetail = function(key, d) {
     s = d[key][settings.currency];
@@ -141,25 +141,25 @@ var viewDetail = function(key, d) {
     }
 
     utils.writeLine();
-    utils.writeLine("^R> ^WPrice       ^G: $^C${0}^G ${1}", [ s.PRICE.toColorNumber('^C', '^w'), settings.currency ]);
-    utils.writeLine("^R> ^W24hr Open   ^G: $^C${0}^G ${1}", [ s.OPEN24HOUR.toColorNumber('^C', '^w'), settings.currency ]);
-    utils.writeLine("^R> ^W24hr High   ^G: $^C${0}^G ${1}", [ s.HIGH24HOUR.toColorNumber('^C', '^w'), settings.currency ]);
-    utils.writeLine("^R> ^W24hr Low    ^G: $^C${0}^G ${1}", [ s.LOW24HOUR.toColorNumber('^C', '^w'), settings.currency ]);
+    utils.writeLine("^R> ^WPrice       ^G: $^C${0}^G ${1}", [ s.PRICE.toColorNumber('^C', '^W'), settings.currency ]);
+    utils.writeLine("^R> ^W24hr Open   ^G: $^C${0}^G ${1}", [ s.OPEN24HOUR.toColorNumber('^C', '^W'), settings.currency ]);
+    utils.writeLine("^R> ^W24hr High   ^G: $^C${0}^G ${1}", [ s.HIGH24HOUR.toColorNumber('^C', '^W'), settings.currency ]);
+    utils.writeLine("^R> ^W24hr Low    ^G: $^C${0}^G ${1}", [ s.LOW24HOUR.toColorNumber('^C', '^W'), settings.currency ]);
 
     utils.writeLine();
-    utils.writeLine("^R> ^W24hr Volume ^G: ^C${0}", [ s.VOLUME24HOUR.toColorNumber('^C', '^w') ]);
-    utils.writeLine("^R> ^W24hr Change ^G: ^C${0}", [ s.CHANGE24HOUR.toColorNumber('^C', '^w') ]);
+    utils.writeLine("^R> ^W24hr Volume ^G: ^C${0}", [ s.VOLUME24HOUR.toColorNumber('^C', '^W') ]);
+    utils.writeLine("^R> ^W24hr Change ^G: ^C${0}", [ s.CHANGE24HOUR.toColorNumber('^C', '^W') ]);
 
     utils.writeLine("");
-    utils.writeLine("^R> ^WSupply      ^G: ^C${0}", [ s.SUPPLY.toColorNumber('^C', '^w') ]);
-    utils.writeLine("^R> ^WMarket Cap  ^G: ^C${0}", [ s.MKTCAP.toColorNumber('^C', '^w') ]);
+    utils.writeLine("^R> ^WSupply      ^G: ^C${0}", [ s.SUPPLY.toColorNumber('^C', '^W') ]);
+    utils.writeLine("^R> ^WMarket Cap  ^G: ^C${0}", [ s.MKTCAP.toColorNumber('^C', '^W') ]);
 
     utils.write(prompt);
     suspend = false;
 };
 
 /******************************************************
- * Desc: New BTC Data
+ * View new BTC data
  ******************************************************/
 BTCUpdate.on('updates', function(coinData) {
     lenBTC = 0;
@@ -208,7 +208,7 @@ BTCUpdate.on('updates', function(coinData) {
             utils.writeLine('^W${0} ^G: ^C${1} ^G: ^W${2}^wcoin ^G: ^W${3}${4} ${5}${6}', [
                 thisCoin.padStart(7),
                 sNme, 
-                cData.BTC.noExponents().padEnd(lenBTC + 1), 
+                cData.BTC.noExponents().padEnd(lenBTC + 1).toColorNumber('^C', '^W'),
                 clr,
                 cData[sCurr].padStart(lenUSD),
                 sCurr,
@@ -216,7 +216,7 @@ BTCUpdate.on('updates', function(coinData) {
             ]);
         } 
 
-         /* Update all the last prices */
+         // Update all the last prices
         for (let c in coins) 
             coins[c][2] = coinData[c][settings.currency];
 
@@ -225,7 +225,8 @@ BTCUpdate.on('updates', function(coinData) {
 });
 
 /******************************************************
- * Desc: Menu system
+ * Menu system
+ * TODO: Code cleanup
  ******************************************************/
 function menuHandler(key) {
     if (!(suspend || key.length <= 0)) {
@@ -380,16 +381,15 @@ function menuHandler(key) {
 
         }
 
-        /* Save all settings */
+        // Save all settings 
         fs.writeFile("holdings.json", JSON.stringify(coins, null, 2), function(){});
         fs.writeFile("settings.json", JSON.stringify(settings, null, 2), function(){});
     }
-
     if (!suspend) utils.write(prompt);
 }
 
 /******************************************************
- * Desc: Main Block
+ * Main Block
  ******************************************************/
 utils.writeLine();
 utils.writeLine("^R> ^WBitTerm Alerts v1^G: ^WBy: ^EFrostyCrits ^G(^wDec, 2017^G)");

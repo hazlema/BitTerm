@@ -1,9 +1,12 @@
 var ansi       = require('ansi');
 var cursor     = ansi(process.stdout);
 
-/******************************************************
+/**********************************************************
+ * Func: write('^WMy name is ^G: ^C${0}^n', ['Matthew']);
  * Desc: Color formatting for the terminal
- ******************************************************/
+ * Para: Text, Array
+ *  Ret: Ansi formatted string
+ **********************************************************/
 var write = function(str, params) {
     var colorNext = false;
     if (str === undefined) str = '';
@@ -42,7 +45,6 @@ var write = function(str, params) {
                 case 'n': console.log();             break;
                 case 's': cursor.beep();             break;  // System Beep
             }
-
             colorNext = false;
         } else 
             if (str[counter] == '^') 
@@ -52,14 +54,24 @@ var write = function(str, params) {
     }
 }
 
+/**********************************************************
+ * Func: writeLine('^WMy name is ^G: ^C${0}', ['Matthew']);
+ * Desc: Color formatting for the terminal.  Same as above
+ *       but adds a return at the end
+ * Para: Text, Array
+ *  Ret: Ansi formatted string
+ **********************************************************/
 var writeLine = function(str, params) {
     if (str === undefined) str = '';
     return write(str + '^n', params)
 }
 
-/******************************************************
+/**********************************************************
+ * Func: '1.51e-6'.noExponents();
  * Desc: Convert scientific notation to a long string
- ******************************************************/
+ * Para: 
+ *  Ret: Formatted string
+ **********************************************************/
 Number.prototype.noExponents = function () {
     var data = String(this).split(/[eE]/),
         z    = '';
@@ -85,9 +97,12 @@ Number.prototype.noExponents = function () {
     return str + z;
 };
 
-/******************************************************
+/**********************************************************
+ * Func: '0.1'.twoDec();
  * Desc: Make sure there are two decimal places
- ******************************************************/
+ * Para: 
+ *  Ret: Formatted string
+ **********************************************************/
 Number.prototype.twoDec = function() {
     var str = this + '';
 
@@ -98,16 +113,22 @@ Number.prototype.twoDec = function() {
     return str;
 };
 
-/******************************************************
+/**********************************************************
+ * Func: 'Backwards'.reverse();
  * Desc: Reverse a string
- ******************************************************/
+ * Para: 
+ *  Ret: Formatted string
+ **********************************************************/
 String.prototype.reverse = function() {
     return this.split("").reverse("").join("");
 }
 
-/******************************************************
+/**********************************************************
+ * Func: '1000000000'.insertColors("^C', '^M', true);
  * Desc: Insert color into string in groups of 3
- ******************************************************/
+ * Para: Color, Color, Bool
+ *  Ret: Ansi Formatted string
+ **********************************************************/
 String.prototype.insertColors = function(Color1, Color2, reverse) {
     var srcStr = this;
 
@@ -138,9 +159,12 @@ String.prototype.insertColors = function(Color1, Color2, reverse) {
     return endStr;
 }
 
-/******************************************************
- * Desc: Colorize a big number w/ Dec
- ******************************************************/
+/**********************************************************
+ * Func: '100000.00001'.insertColors("^C', '^M');
+ * Desc: Colorize a number with a decimal
+ * Para: Color, Color
+ *  Ret: Ansi Formatted string
+ **********************************************************/
 String.prototype.toColorNumber = function(Color1, Color2) {
     var src = '' + this,
         seg = [];
@@ -155,14 +179,18 @@ String.prototype.toColorNumber = function(Color1, Color2) {
     }
     return src;
 }
-
 Number.prototype.toColorNumber = function(Color1, Color2) {
     return (this + '').toColorNumber(Color1, Color2);
 }
 
+/**********************************************************
+ * Func: padEnd || padStart
+ * Desc: Same as the string functions, just using numbers
+ * Para: int
+ *  Ret: Formatted string
+ **********************************************************/
 Number.prototype.padEnd   = function(args) { return ('' + this).padEnd(args);   };
 Number.prototype.padStart = function(args) { return ('' + this).padStart(args); };
-
     
 module.exports = {
   ansi,
