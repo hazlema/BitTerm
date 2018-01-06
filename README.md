@@ -2,7 +2,7 @@
 Bitcoin Tracking and Alerts<br>
 <br>
 **Author**:<br>
-Matthew Hazlett, Jan 2017<br>
+Matthew Hazlett, Jan 2018<br>
 <br>
 **BTC**: 1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq<br>
 **XVG**: DFZeD7tNLDFvX3yre9RodBCEvY6mW9gD95<br>

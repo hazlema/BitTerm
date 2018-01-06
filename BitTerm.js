@@ -139,7 +139,7 @@ var viewDetail = function(key, d) {
         if (coins[key][1] == 0) 
             utils.writeLine("^R> ^YLower Limit ^G: ^RLower limit is not set");
         else
-            utils.writeLine("^R> ^YLower Limit ^G: ^C${0}^G ${1}^n", [ coins[key][1].twoDec(), settings.currency ]);
+            utils.writeLine("^R> ^YLower Limit ^G: ^C${0}^G ${1}", [ coins[key][1].twoDec(), settings.currency ]);
     }
 
     utils.writeLine();
@@ -421,7 +421,7 @@ function menuHandler(key) {
  * Main Block
  ******************************************************/
 utils.writeLine();
-utils.writeLine("^R> ^WBitTerm Alerts v1^G: ^WBy: ^EFrostyCrits ^G(^wDec, 2017^G)");
+utils.writeLine("^R> ^WBitTerm Alerts v1^G: ^WBy: ^EFrostyCrits ^G(^wJan 2018^G)");
 utils.writeLine("^R> ^WXVG^G: ^CDFZeD7tNLDFvX3yre9RodBCEvY6mW9gD95");
 utils.writeLine("^R> ^WBTC^G: ^Y1LbEr6BAqcwKjJywvWQmwVSV289W7eQBUq");
 
