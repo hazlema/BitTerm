@@ -65,7 +65,7 @@ var coins = {
 };
 
 var settings = {
-    isSound:  false,
+    isSound:  true,
     email:    '',
     pollTime: 30000,
     currency: 'USD'
